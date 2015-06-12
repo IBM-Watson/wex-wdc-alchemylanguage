@@ -1,0 +1,1054 @@
+<function name="vse-converter-alchemyapi-alchemylanguage-bluemix" type="converter" type-in="application/vxml-unnormalized" type-out="application/vxml-unnormalized" >
+  <prototype>
+    <description>
+      The Watson AlchemyAPI Bluemix service offers 12 API functions as part of its text analysis service, each of which uses sophisticated natural language processing techniques to analyze your content and add high-level semantic information. These functions are accessed via IBM Bluemix, and the data is returned as an easy-to-parse structure.  An API key required to use the AlchemyLanguage service and can be acquired from the Alchemy API wesbsite (http://www.alchemyapi.com/api/register.html).
+
+      See the AlchemyLanguage API Reference for examples and detailed information on each AlchemyLanguage function (http://www.alchemyapi.com/products/alchemylanguage).
+    </description>
+    <label>AlchemyLangauge Bluemix Converter</label>
+
+    <!-- Global -->
+    <declare type="url" name="alchemy-base-url" initial-value="http://MYAPPLICATION.mybluemix.net/">
+      <label>Bluemix application base URL</label>
+      <description>REST endpoints for all API requests will be built from this starting point.
+      </description>
+    </declare>
+    <declare type="number" name="default-timeout" initial-value="60" units="seconds">
+      <label>Default timeout</label>
+      <description>This sets the default amount of time, in seconds, to wait for a response from the API call.  This value can be overridden for individual services in their specific configuration.</description>
+    </declare>
+    <declare type="string" name="proxy-host-port">
+      <label>Proxy server (host:port)</label>
+      <description>This sets a proxy server through which all Bluemix application calls will be directed.  It is recommended that a local caching proxy be used to improve performance and reduce the total number of Bluemix application calls.</description>
+    </declare>
+    <declare type="user-password" name="proxy-user-pass">
+      <label>Proxy username and password</label>
+      <description>Provide the credentials used to authenticate to the proxy server configured above.</description>
+    </declare>
+    <declare type="flag" name="debug">
+      <label>Enable debug contents</label>
+      <description>If debug contents are enabled, then when any enabled AlchemyAPI service returns an error, a content containing the error message will be added to the document.  This is useful for debugging, but it may not be as valuable in your final crawl.</description>
+    </declare>
+
+    <!-- Sentiment Analysis -->
+    <proto-section section="Sentiment Analysis" toggle-section="toggle-section">
+      <declare name="enable-sentiment-analysis" type="flag">
+        <label>Enable</label>
+        <description>Setting this to true will enable extracting positive/negative sentiment from any textual content.
+</description>
+      </declare>
+      <declare type="string" initial-value="api/getsentiment" name="sentiment-analysis-url-path">
+        <label>Sentiment Analysis URL Path</label>
+        <description>This string will be concatenated to the end of the Bluemix application base URL configured above to generate the URL that points at the Sentiment Analysis service.</description>
+      </declare>
+      <declare type="separated-set" initial-value="snippet&#10;" toggle-default="toggle-default" type-separator="&#10;" name="sentiment-analysis-contents">
+        <label>Sentiment Analysis contents</label>
+        <description>Provide a newline-separated list of the names of contents whose text will be submitted for Sentiment Analysis.  Note that the Alchemy text APIs only consider the first 50kB of text, so text beyond the first 50kB will be trimmed before the API request is sent.
+</description>
+      </declare>
+      <declare type="number" name="sentiment-analysis-timeout" initial-value="0">
+        <label>Sentiment Analysis Timeout</label>
+        <description>This sets the default amount of time, in seconds, to wait for a response from the Sentiment Analysis API call.  A value of 0 indicates that the global AlchemyLanguage timeout setting should be used.</description>
+      </declare>
+    </proto-section>
+
+    <!-- Targeted Sentiment -->
+    <proto-section section="Targeted Sentiment" toggle-section="toggle-section">
+      <declare name="enable-targeted-sentiment" type="flag">
+        <label>Enable</label>
+        <description>Setting this to true will enable extracting positive/negative sentiment targeted at a specified phrase from any textual content.
+</description>
+      </declare>
+      <declare type="string" initial-value="api/targetsentiment" name="targeted-sentiment-url-path">
+        <label>Targeted Sentiment URL Path</label>
+        <description>This string will be concatenated to the end of the Bluemix application base URL configured above to generate the URL that points at the Targeted Sentiment service.</description>
+      </declare>
+      <declare type="string" initial-value="normalize-space(content[@name='author']/text())" name="targeted-sentiment-target-xpath">
+        <label>Targeted Sentiment Target XPath</label>
+        <description>This XPath selects the text representing the target that is submitted to the Targeted Sentiment service.  The target should appear in the text selected in the following option.
+</description>
+      </declare>
+      <declare type="separated-set" initial-value="snippet&#10;" toggle-default="toggle-default" type-separator="&#10;" name="targeted-sentiment-text-contents">
+        <label>Targeted Sentiment Text contents</label>
+        <description>Provide a newline-separated list of the names of contents whose text will be submitted for Targeted Sentiment Analysis.  Note that the Alchemy text APIs only consider the first 50kB of text, so text beyond the first 50kB will be trimmed before the API request is sent.
+</description>
+      </declare>
+      <declare type="number" name="targeted-sentiment-timeout" initial-value="0">
+        <label>Targeted Sentiment Timeout</label>
+        <description>This sets the default amount of time, in seconds, to wait for a response from the Targeted Sentiment API call.  A value of 0 indicates that the global AlchemyLanguage timeout setting should be used.</description>
+      </declare>
+    </proto-section>
+
+    <!-- Taxonomy -->
+    <proto-section section="Taxonomy" toggle-section="toggle-section">
+      <declare name="enable-taxonomy" type="flag">
+        <label>Enable</label>
+        <description>Setting this to true will enable taxonomy classification of the selected text.  See the AlchemyAPI Taxonomy documentation for the complete list of possible categories.</description>
+      </declare>
+      <declare type="string" initial-value="api/gettaxonomy" name="taxonomy-url-path">
+        <label>Taxonomy URL Path</label>
+        <description>This string will be concatenated to the end of the Bluemix application base URL configured above to generate the URL that points at the Taxonomy service.</description>
+      </declare>
+      <declare type="separated-set" initial-value="snippet&#10;" toggle-default="toggle-default" type-separator="&#10;" name="taxonomy-contents">
+        <label>Taxonomy contents</label>
+        <description>Provide a newline-separated list of the names of contents whose text will be submitted for Taxonomy Analysis.  Note that the Alchemy text APIs only consider the first 50kB of text, so text beyond the first 50kB will be trimmed before the API request is sent.
+</description>
+      </declare>
+      <declare type="number" name="taxonomy-timeout" initial-value="0">
+        <label>Taxonomy Timeout</label>
+        <description>This sets the default amount of time, in seconds, to wait for a response from the Taxonomy API call.    A value of 0 indicates that the global AlchemyLanguage timeout setting should be used.</description>
+      </declare>
+    </proto-section>
+
+    <!-- Concept Tagging -->
+    <proto-section section="Concept Tagging" toggle-section="toggle-section">
+      <declare name="enable-concept-tagging" type="flag">
+        <label>Enable</label>
+        <description>Setting this to true will enable Concept Tagging, which discovers abstract concepts in the selected text.</description>
+      </declare>
+      <declare type="string" initial-value="api/getconcept" name="concept-tagging-url-path">
+        <label>Concept Tagging URL Path</label>
+        <description>This string will be concatenated to the end of the Bluemix application base URL configured above to generate the URL that points at the Concept Tagging service.</description>
+      </declare>
+      <declare type="separated-set" initial-value="snippet&#10;" toggle-default="toggle-default" type-separator="&#10;" name="concept-tagging-contents">
+        <label>Concept Tagging contents</label>
+        <description>Provide a newline-separated list of the names of contents whose text will be submitted for Concept Tagging.  Note that the Alchemy text APIs only consider the first 50kB of text, so text beyond the first 50kB will be trimmed before the API request is sent.
+</description>
+      </declare>
+      <declare type="number" name="concept-tagging-timeout" initial-value="0">
+        <label>Concept Tagging Timeout</label>
+        <description>This sets the default amount of time, in seconds, to wait for a response from the Concept Tagging API call.  A value of 0 indicates that the global AlchemyLanguage timeout setting should be used.</description>
+      </declare>
+    </proto-section>
+
+    <!-- Entity Extraction -->
+    <proto-section section="Entity Extraction" toggle-section="toggle-section">
+      <declare name="enable-entity-extraction" type="flag">
+        <label>Enable</label>
+        <description>Setting this to true will enable discovery and extraction of entities from any textual content.
+</description>
+      </declare>
+      <declare type="string" initial-value="api/getentity" name="entity-extraction-url-path">
+        <label>Entity Extraction URL Path</label>
+        <description>This string will be concatenated to the end of the Bluemix application base URL configured above to generate the URL that points at the Entity Extraction service.</description>
+      </declare>
+      <declare type="separated-set" initial-value="snippet&#10;" toggle-default="toggle-default" type-separator="&#10;" name="entity-extraction-contents">
+        <label>Entity Extraction contents</label>
+        <description>Provide a newline-separated list of the names of contents whose text will be submitted for Entity Extraction.  Note that the Alchemy text APIs only consider the first 50kB of text, so text beyond the first 50kB will be trimmed before the API request is sent.
+</description>
+      </declare>
+      <declare type="positive-int" name="entity-extraction-max" initial-value="10">
+        <label>Maximum Entities</label>
+        <description>This sets the maximum number of entities to extract.  Entities in the text that might be found beyond this limit will not be returned.</description>
+      </declare>
+      <declare type="flag" name="entity-extraction-sentiment">
+        <label>Return Sentiment</label>
+        <description>Return sentiment value for each entity.  Note that this incurs an additional transaction cost.</description>
+      </declare>
+      <declare type="flag" name="entity-link-data">
+        <label>Return Link Data</label>
+        <description>Return semantic link data (e.g. DBPedia) if available.</description>
+      </declare>
+      <declare type="number" name="entity-extraction-timeout" initial-value="0">
+        <label>Entity Extraction Timeout</label>
+        <description>This sets the default amount of time, in seconds, to wait for a response from the Entity Extraction API call.  A value of 0 indicates that the global AlchemyLanguage timeout setting should be used.</description>
+      </declare>
+    </proto-section>
+
+    <!-- Keyword Extraction -->
+    <proto-section section="Keyword Extraction" toggle-section="toggle-section">
+      <declare name="enable-keyword-extraction" type="flag">
+        <label>Enable</label>
+        <description>Setting this to true will enable discovery and extraction of topic keywords from any textual content.
+</description>
+      </declare>
+      <declare type="string" initial-value="api/getkeyword" name="keyword-extraction-url-path">
+        <label>Keyword Extraction URL Path</label>
+        <description>This string will be concatenated to the end of the Bluemix application base URL configured above to generate the URL that points at the Keyword Extraction service.</description>
+      </declare>
+      <declare type="separated-set" initial-value="snippet&#10;" toggle-default="toggle-default" type-separator="&#10;" name="keyword-extraction-contents">
+        <label>Keyword Extraction contents</label>
+        <description>Provide a newline-separated list of the names of contents whose text will be submitted for Keyword Extraction.  Note that the Alchemy text APIs only consider the first 50kB of text, so text beyond the first 50kB will be trimmed before the API request is sent.
+</description>
+      </declare>
+      <declare type="positive-int" name="keyword-extraction-max" initial-value="10">
+        <label>Maximum Keywords</label>
+        <description>This sets the maximum number of keywords to extract.  Keywords in the text that might be found beyond this limit will not be returned.</description>
+      </declare>
+      <declare type="number" name="keyword-extraction-timeout" initial-value="0">
+        <label>Keyword Extraction Timeout</label>
+        <description>This sets the default amount of time, in seconds, to wait for a response from the Keyword Extraction API call.  A value of 0 indicates that the global AlchemyLanguage timeout setting should be used.</description>
+      </declare>
+    </proto-section>
+
+    <!-- Relation Extraction -->
+    <proto-section section="Relation Extraction" toggle-section="toggle-section">
+      <declare name="enable-relation-extraction" type="flag">
+        <label>Enable</label>
+        <description>Setting this to true will enable discovery and extraction of Subject-Action-Object relations from any textual content.
+</description>
+      </declare>
+      <declare type="string" initial-value="api/getrelation" name="relation-extraction-url-path">
+        <label>Relation Extraction URL Path</label>
+        <description>This string will be concatenated to the end of the Bluemix application base URL configured above to generate the URL that points at the Relation Extraction service.</description>
+      </declare>
+      <declare type="separated-set" initial-value="snippet&#10;" toggle-default="toggle-default" type-separator="&#10;" name="relation-extraction-contents">
+        <label>Relation Extraction contents</label>
+        <description>Provide a newline-separated list of the names of contents whose text will be submitted for Relation Extraction.  Note that the Alchemy text APIs only consider the first 50kB of text, so text beyond the first 50kB will be trimmed before the API request is sent.
+</description>
+      </declare>
+      <declare type="positive-int" name="relation-extraction-max" initial-value="10" max="100">
+        <label>Maximum Relations</label>
+        <description>This sets the maximum number of relations to extract.  Relations in the text that might be found beyond this limit will not be returned.  The maximum value for this setting is 100.</description>
+      </declare>
+      <declare type="number" name="relation-extraction-timeout" initial-value="0">
+        <label>Relation Extraction Timeout</label>
+        <description>This sets the default amount of time, in seconds, to wait for a response from the Relation Extraction API call.  A value of 0 indicates that the global AlchemyLanguage timeout setting should be used.</description>
+      </declare>
+    </proto-section>
+  </prototype>
+
+  <parser type="xsl">
+    <call-function name="xsl-parser-variable">
+      <with name="name">alchemy-base-url</with>
+      <with name="value">
+        <if-var name="alchemy-base-url">
+          <value-of-var name="alchemy-base-url" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">default-timeout</with>
+      <with name="value">
+        <if-var name="default-timeout">
+          <value-of-var name="default-timeout" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">proxy-host-port</with>
+      <with name="value">
+        <if-var name="proxy-host-port">
+          <value-of-var name="proxy-host-port" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">proxy-user-pass</with>
+      <with name="value">
+        <if-var name="proxy-user-pass">
+          <value-of-var name="proxy-user-pass" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">debug</with>
+      <with name="value">
+        <if-var name="debug">
+          <value-of-var name="debug" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">enable-sentiment-analysis</with>
+      <with name="value">
+        <if-var name="enable-sentiment-analysis">
+          <value-of-var name="enable-sentiment-analysis" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">sentiment-analysis-url-path</with>
+      <with name="value">
+        <if-var name="sentiment-analysis-url-path">
+          <value-of-var name="sentiment-analysis-url-path" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">sentiment-analysis-contents</with>
+      <with name="value">
+        <if-var name="sentiment-analysis-contents">
+          <value-of-var name="sentiment-analysis-contents" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">sentiment-analysis-timeout</with>
+      <with name="value">
+        <if-var name="sentiment-analysis-timeout">
+          <value-of-var name="sentiment-analysis-timeout" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">enable-targeted-sentiment</with>
+      <with name="value">
+        <if-var name="enable-targeted-sentiment">
+          <value-of-var name="enable-targeted-sentiment" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">targeted-sentiment-url-path</with>
+      <with name="value">
+        <if-var name="targeted-sentiment-url-path">
+          <value-of-var name="targeted-sentiment-url-path" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">targeted-sentiment-target-xpath</with>
+      <with name="value">
+        <if-var name="targeted-sentiment-target-xpath">
+          <value-of-var name="targeted-sentiment-target-xpath" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">targeted-sentiment-text-contents</with>
+      <with name="value">
+        <if-var name="targeted-sentiment-text-contents">
+          <value-of-var name="targeted-sentiment-text-contents" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">targeted-sentiment-timeout</with>
+      <with name="value">
+        <if-var name="targeted-sentiment-timeout">
+          <value-of-var name="targeted-sentiment-timeout" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">enable-taxonomy</with>
+      <with name="value">
+        <if-var name="enable-taxonomy">
+          <value-of-var name="enable-taxonomy" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">taxonomy-url-path</with>
+      <with name="value">
+        <if-var name="taxonomy-url-path">
+          <value-of-var name="taxonomy-url-path" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">taxonomy-contents</with>
+      <with name="value">
+        <if-var name="taxonomy-contents">
+          <value-of-var name="taxonomy-contents" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">taxonomy-timeout</with>
+      <with name="value">
+        <if-var name="taxonomy-timeout">
+          <value-of-var name="taxonomy-timeout" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">enable-concept-tagging</with>
+      <with name="value">
+        <if-var name="enable-concept-tagging">
+          <value-of-var name="enable-concept-tagging" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">concept-tagging-url-path</with>
+      <with name="value">
+        <if-var name="concept-tagging-url-path">
+          <value-of-var name="concept-tagging-url-path" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">concept-tagging-contents</with>
+      <with name="value">
+        <if-var name="concept-tagging-contents">
+          <value-of-var name="concept-tagging-contents" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">concept-tagging-timeout</with>
+      <with name="value">
+        <if-var name="concept-tagging-timeout">
+          <value-of-var name="concept-tagging-timeout" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">enable-entity-extraction</with>
+      <with name="value">
+        <if-var name="enable-entity-extraction">
+          <value-of-var name="enable-entity-extraction" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">entity-extraction-url-path</with>
+      <with name="value">
+        <if-var name="entity-extraction-url-path">
+          <value-of-var name="entity-extraction-url-path" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">entity-extraction-contents</with>
+      <with name="value">
+        <if-var name="entity-extraction-contents">
+          <value-of-var name="entity-extraction-contents" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">entity-extraction-sentiment</with>
+      <with name="value">
+        <if-var name="entity-extraction-sentiment">
+          <value-of-var name="entity-extraction-sentiment" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">entity-link-data</with>
+      <with name="value">
+        <if-var name="entity-link-data">
+          <value-of-var name="entity-link-data" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">entity-extraction-max</with>
+      <with name="value">
+        <if-var name="entity-extraction-max">
+          <value-of-var name="entity-extraction-max" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">entity-extraction-timeout</with>
+      <with name="value">
+        <if-var name="entity-extraction-timeout">
+          <value-of-var name="entity-extraction-timeout" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">enable-keyword-extraction</with>
+      <with name="value">
+        <if-var name="enable-keyword-extraction">
+          <value-of-var name="enable-keyword-extraction" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">keyword-extraction-url-path</with>
+      <with name="value">
+        <if-var name="keyword-extraction-url-path">
+          <value-of-var name="keyword-extraction-url-path" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">keyword-extraction-contents</with>
+      <with name="value">
+        <if-var name="keyword-extraction-contents">
+          <value-of-var name="keyword-extraction-contents" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">keyword-extraction-max</with>
+      <with name="value">
+        <if-var name="keyword-extraction-max">
+          <value-of-var name="keyword-extraction-max" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">keyword-extraction-timeout</with>
+      <with name="value">
+        <if-var name="keyword-extraction-timeout">
+          <value-of-var name="keyword-extraction-timeout" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">enable-relation-extraction</with>
+      <with name="value">
+        <if-var name="enable-relation-extraction">
+          <value-of-var name="enable-relation-extraction" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">relation-extraction-url-path</with>
+      <with name="value">
+        <if-var name="relation-extraction-url-path">
+          <value-of-var name="relation-extraction-url-path" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">relation-extraction-contents</with>
+      <with name="value">
+        <if-var name="relation-extraction-contents">
+          <value-of-var name="relation-extraction-contents" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">relation-extraction-max</with>
+      <with name="value">
+        <if-var name="relation-extraction-max">
+          <value-of-var name="relation-extraction-max" />
+        </if-var>
+      </with>
+    </call-function>
+    <call-function name="xsl-parser-variable">
+      <with name="name">relation-extraction-timeout</with>
+      <with name="value">
+        <if-var name="relation-extraction-timeout">
+          <value-of-var name="relation-extraction-timeout" />
+        </if-var>
+      </with>
+    </call-function><![CDATA[
+<xsl:variable name="apos">'</xsl:variable>
+<xsl:variable name="sgts"> &gt; </xsl:variable>
+<xsl:template match="/">
+  <!-- copy the input -->
+  <xsl:apply-templates mode="copy" />
+</xsl:template>
+<xsl:template match="@*|node()" mode="copy" >
+  <xsl:copy>
+    <xsl:apply-templates select="@*|node()" mode="copy"/>
+  </xsl:copy>
+</xsl:template>
+<xsl:template match="document" mode="copy" >
+<!-- when we have a document element, we want to copy it too,
+but we also want to run some AlchemyAPI analysis -->
+  <xsl:copy>
+    <xsl:apply-templates select="@*|node()" mode="copy" />
+  <!-- That takes care of the document element and children, now add AlchemyAPI analysis -->
+    <!-- Sentiment -->
+    <xsl:if test="$enable-sentiment-analysis">
+      <xsl:variable name="sentiment-analysis-text" >
+        <xsl:call-template name="gather-text">
+          <xsl:with-param name="content-names" select="$sentiment-analysis-contents" />
+          <xsl:with-param name="document" select="." />
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:if test="$sentiment-analysis-text != '' " >
+        <xsl:apply-templates select="." mode="text-sentiment" >
+          <xsl:with-param name="text"><xsl:value-of select="$sentiment-analysis-text" /></xsl:with-param>
+        </xsl:apply-templates>
+      </xsl:if>
+    </xsl:if>
+    <!-- Targeted Sentiment -->
+    <xsl:if test="$enable-targeted-sentiment" >
+      <xsl:variable name="targeted-sentiment-text" >
+        <xsl:call-template name="gather-text">
+          <xsl:with-param name="content-names" select="$targeted-sentiment-text-contents" />
+          <xsl:with-param name="document" select="." />
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:variable name="targeted-sentiment-target" select="dyn:evaluate($targeted-sentiment-target-xpath)" />
+      <xsl:if test="( $targeted-sentiment-target != '' ) and ( $targeted-sentiment-text != '' )" >
+        <xsl:apply-templates select="." mode="targeted-sentiment" >
+            <xsl:with-param name="text"><xsl:value-of select="$targeted-sentiment-text" /></xsl:with-param>
+        </xsl:apply-templates>
+      </xsl:if>
+    </xsl:if>
+    <!-- Taxonomy -->
+    <xsl:if test="$enable-taxonomy" >
+      <xsl:variable name="taxonomy-text" >
+        <xsl:call-template name="gather-text">
+          <xsl:with-param name="content-names" select="$taxonomy-contents" />
+          <xsl:with-param name="document" select="." />
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:if test="$taxonomy-text != '' " >
+        <xsl:apply-templates select="." mode="taxonomy" >
+            <xsl:with-param name="text"><xsl:value-of select="$taxonomy-text" /></xsl:with-param>
+        </xsl:apply-templates>
+      </xsl:if>
+    </xsl:if>
+    <!-- Concept Tagging -->
+    <xsl:if test="$enable-concept-tagging" >
+      <xsl:variable name="concept-tagging-text" >
+        <xsl:call-template name="gather-text">
+          <xsl:with-param name="content-names" select="$concept-tagging-contents" />
+          <xsl:with-param name="document" select="." />
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:if test="$concept-tagging-text != '' " >
+        <xsl:apply-templates select="." mode="concept-tagging" >
+            <xsl:with-param name="text"><xsl:value-of select="$concept-tagging-text" /></xsl:with-param>
+        </xsl:apply-templates>
+      </xsl:if>
+    </xsl:if>
+
+    <!-- Entity Extraction -->
+    <xsl:if test="$enable-entity-extraction">
+      <xsl:variable name="entity-extraction-text">
+        <xsl:call-template name="gather-text">
+          <xsl:with-param name="content-names" select="$entity-extraction-contents" />
+          <xsl:with-param name="document" select="." />
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:if test="$entity-extraction-text != '' " >
+        <xsl:apply-templates select="." mode="entity-extraction" >
+          <xsl:with-param name="text"><xsl:value-of select="$entity-extraction-text" /></xsl:with-param>
+        </xsl:apply-templates>
+      </xsl:if>
+    </xsl:if>
+
+
+    <!-- Keyword Extraction -->
+    <xsl:if test="$enable-keyword-extraction">
+      <xsl:variable name="keyword-extraction-text" >
+        <xsl:call-template name="gather-text">
+          <xsl:with-param name="content-names" select="$keyword-extraction-contents" />
+          <xsl:with-param name="document" select="." />
+        </xsl:call-template>
+      </xsl:variable>
+    <xsl:if test="$keyword-extraction-text != '' " >
+        <xsl:apply-templates select="." mode="keyword-extraction" >
+          <xsl:with-param name="text"><xsl:value-of select="$keyword-extraction-text" /></xsl:with-param>
+        </xsl:apply-templates>
+      </xsl:if>
+    </xsl:if>
+
+
+    <!-- Relation Extraction -->
+    <xsl:if test="$enable-relation-extraction">
+      <xsl:variable name="relation-extraction-text" >
+        <xsl:call-template name="gather-text">
+          <xsl:with-param name="content-names" select="$relation-extraction-contents" />
+          <xsl:with-param name="document" select="." />
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:if test="$relation-extraction-text != '' " >
+        <xsl:apply-templates select="." mode="relation-extraction" >
+          <xsl:with-param name="text"><xsl:value-of select="$relation-extraction-text" /></xsl:with-param>
+        </xsl:apply-templates>
+      </xsl:if>
+    </xsl:if>
+  </xsl:copy>
+</xsl:template>
+<!-- Sentiment -->
+<xsl:template match="document" mode="text-sentiment" >
+  <xsl:param name="text" />
+  <xsl:variable name="sentiment-url" select="concat($alchemy-base-url, $sentiment-analysis-url-path)" />
+  <xsl:variable name="timeout" select="viv:choose($sentiment-analysis-timeout = 0, $default-timeout, $sentiment-analysis-timeout) * 1000" />
+  <xsl:variable name="xml">
+    <parse url="{$sentiment-url}" method="POST">
+      <xsl:if test="$proxy-host-port" >
+        <attribute name="proxy" value="{$proxy-host-port}" />
+      </xsl:if>
+      <xsl:if test="$proxy-user-pass" >
+        <attribute name="proxy-user-password" value="{$proxy-user-pass}" />
+      </xsl:if>
+      <parse-param name="outputmode" value="xml" />
+      <parse-param name="text">
+        <attribute name="value">
+          <xsl:value-of select="$text" />
+        </attribute>
+      </parse-param>
+    </parse>
+    <fetch finish="finish" timeout="{$timeout}" />
+  </xsl:variable>
+  <!-- execute the fetch pointing at the API -->
+  <xsl:variable name="r" select="viv:process-xml($xml)" />
+  <!-- check the results from the API and add appropriate contents -->
+  <xsl:choose>
+    <xsl:when test="$r/results/status = 'OK'" >
+      <content name="alchemyapi-document-sentiment-type" action="none" type="text">
+        <xsl:value-of select="$r/results/docSentiment/type" />
+      </content>
+      <content name="alchemyapi-document-sentiment-score" action="none" type="text">
+        <xsl:value-of select="$r/results/docSentiment/score" />
+      </content>
+      <content name="alchemyapi-document-sentiment-mixed" action="none" type="text">
+        <xsl:value-of select="viv:choose($r/results/docSentiment/mixed = '1', '1', '0')" />
+      </content>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="show-debug-information">
+        <xsl:with-param name="result" select="$r" />
+        <xsl:with-param name="is-debug" select="$debug" />
+        <xsl:with-param name="label">document-sentiment</xsl:with-param>
+      </xsl:call-template>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+<!-- Targeted Sentiment -->
+<xsl:template match="document" mode="targeted-sentiment" >
+  <xsl:param name="text" />
+  <xsl:variable name="targeted-url" select="concat($alchemy-base-url, $targeted-sentiment-url-path)" />
+  <xsl:variable name="timeout" select="viv:choose($targeted-sentiment-timeout = 0, $default-timeout, $targeted-sentiment-timeout) * 1000" />
+  <xsl:variable name="xml">
+    <parse url="{$targeted-url}" method="POST">
+      <xsl:if test="$proxy-host-port" >
+        <attribute name="proxy" value="{$proxy-host-port}" />
+      </xsl:if>
+      <xsl:if test="$proxy-user-pass" >
+        <attribute name="proxy-user-password" value="{$proxy-user-pass}" />
+      </xsl:if>
+      <parse-param name="outputmode" value="xml" />
+      <parse-param name="target">
+        <attribute name="value"><xsl:value-of select="dyn:evaluate($targeted-sentiment-target-xpath)" /></attribute>
+      </parse-param>
+      <parse-param name="text">
+        <attribute name="value"><xsl:value-of select="$text" /></attribute>
+      </parse-param>
+    </parse>
+    <fetch finish="finish" timeout="{$timeout}" />
+  </xsl:variable>
+  <!-- execute the fetch pointing at the API -->
+  <xsl:variable name="r" select="viv:process-xml($xml)" />
+  <!-- check the results from the API fetch and add appropriate contents -->
+  <xsl:choose>
+    <xsl:when test="$r/results/status = 'OK'" >
+      <content name="alchemyapi-targeted-sentiment-target" action="none" type="text">
+        <xsl:value-of select="dyn:evaluate($targeted-sentiment-target-xpath)" />
+      </content>
+      <content name="alchemyapi-targeted-sentiment-type" action="none" type="text">
+        <xsl:value-of select="$r/results/docSentiment/type" />
+      </content>
+      <content name="alchemyapi-targeted-sentiment-score" action="none" type="text">
+        <xsl:value-of select="$r/results/docSentiment/score" />
+      </content>
+      <content name="alchemyapi-targeted-sentiment-mixed" action="none" type="text">
+        <xsl:value-of select="viv:choose($r/results/docSentiment/mixed = '1', '1', '0')" />
+      </content>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="show-debug-information">
+        <xsl:with-param name="result" select="$r" />
+        <xsl:with-param name="is-debug" select="$debug" />
+        <xsl:with-param name="label">targeted-sentiment</xsl:with-param>
+      </xsl:call-template>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+<!-- Taxonomy -->
+<xsl:template match="document" mode="taxonomy" >
+  <xsl:param name="text" />
+  <xsl:variable name="taxonomy-url" select="concat($alchemy-base-url, $taxonomy-url-path)" />
+  <xsl:variable name="timeout" select="viv:choose($taxonomy-timeout = 0, $default-timeout, $taxonomy-timeout) * 1000" />
+  <xsl:variable name="xml">
+    <parse url="{$taxonomy-url}" method="POST">
+      <xsl:if test="$proxy-host-port" >
+        <attribute name="proxy" value="{$proxy-host-port}" />
+      </xsl:if>
+      <xsl:if test="$proxy-user-pass" >
+        <attribute name="proxy-user-password" value="{$proxy-user-pass}" />
+      </xsl:if>
+      <parse-param name="outputmode" value="xml" />
+      <parse-param name="text">
+        <attribute name="value">
+          <xsl:value-of select="$text" />
+        </attribute>
+      </parse-param>
+    </parse>
+    <fetch finish="finish" timeout="{$timeout}" />
+  </xsl:variable>
+  <!-- execute the fetch pointing at the API -->
+  <xsl:variable name="r" select="viv:process-xml($xml)" />
+  <!-- check the results from the API and add appropriate contents -->
+  <xsl:choose>
+    <xsl:when test="$r/results/status = 'OK'" >
+      <xsl:for-each select="$r/results/taxonomy//element" >
+        <content name="alchemyapi-taxonomy-label" action="none" type="text" score="{./score}" confident="{./confident}" >
+          <!-- drop the leading slash character -->
+          <xsl:value-of select="viv:choose(substring(./label , 1, 1) = '/', substring(./label, 2), ./label)" />
+        </content>
+      </xsl:for-each>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="show-debug-information">
+        <xsl:with-param name="result" select="$r" />
+        <xsl:with-param name="is-debug" select="$debug" />
+        <xsl:with-param name="label">taxonomy</xsl:with-param>
+      </xsl:call-template>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+<!-- Concept Tagging -->
+<xsl:template match="document" mode="concept-tagging" >
+  <xsl:param name="text" />
+  <xsl:variable name="concept-tagging-url" select="concat($alchemy-base-url, $concept-tagging-url-path)" />
+  <xsl:variable name="timeout" select="viv:choose($concept-tagging-timeout = 0, $default-timeout, $concept-tagging-timeout) * 1000" />
+
+  <xsl:variable name="xml">
+    <parse url="{$concept-tagging-url}" method="POST">
+      <xsl:if test="$proxy-host-port" >
+          <attribute name="proxy" value="{$proxy-host-port}" />
+      </xsl:if>
+      <xsl:if test="$proxy-user-pass" >
+          <attribute name="proxy-user-password" value="{$proxy-user-pass}" />
+      </xsl:if>
+      <parse-param name="outputmode" value="xml" />
+      <parse-param name="text">
+        <attribute name="value"><xsl:value-of select="$text" /></attribute>
+      </parse-param>
+      <parse-param name="linkedData" value="0" />
+      <parse-param name="knowledgeGraph" value="0" />
+    </parse>
+
+    <fetch finish="finish" timeout="{$timeout}" />
+  </xsl:variable>
+  <!-- execute the fetch pointing at the API -->
+  <xsl:variable name="r" select="viv:process-xml($xml)" />
+  <!-- check the results from the API and add appropriate contents -->
+  <xsl:choose>
+    <xsl:when test="$r/results/status = 'OK'" >
+      <xsl:for-each select="$r/results/concepts//concept" >
+        <content name="alchemyapi-concept" action="none" type="text" relevance="{./relevance}" >
+          <xsl:value-of select="./text" />
+        </content>
+      </xsl:for-each>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="show-debug-information">
+        <xsl:with-param name="result" select="$r" />
+        <xsl:with-param name="is-debug" select="$debug" />
+        <xsl:with-param name="label">concept-tagging</xsl:with-param>
+      </xsl:call-template>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+<!-- Entity Extraction -->
+<xsl:template match="document" mode="entity-extraction" >
+  <xsl:param name="text" />
+  <xsl:variable name="entity-extraction-url" select="concat($alchemy-base-url, $entity-extraction-url-path)" />
+  <xsl:variable name="timeout" select="viv:choose($entity-extraction-timeout = 0, $default-timeout, $entity-extraction-timeout) * 1000" />
+  <xsl:variable name="xml">
+    <parse url="{$entity-extraction-url}" method="POST">
+      <xsl:if test="$proxy-host-port" >
+        <attribute name="proxy" value="{$proxy-host-port}" />
+      </xsl:if>
+      <xsl:if test="$proxy-user-pass" >
+        <attribute name="proxy-user-password" value="{$proxy-user-pass}" />
+      </xsl:if>
+      <parse-param name="outputmode" value="xml" />
+      <parse-param name="text">
+        <attribute name="value">
+          <xsl:value-of select="$text" />
+        </attribute>
+      </parse-param>
+      <parse-param name="disambiguate" value="1" />
+      <parse-param name="linkedData" value="{viv:if-else($entity-link-data, 1, 0)}" />
+      <parse-param name="coreference" value="1" />
+      <parse-param name="quotations" value="0" />
+      <parse-param name="sentiment" value="{viv:if-else($entity-extraction-sentiment, 1, 0)}" />
+      <parse-param name="showSourceText" value="0" />
+      <parse-param name="maxRetrieve" value="{$entity-extraction-max}" />
+      <parse-param name="knowledgeGraph" value="0" />
+      <parse-param name="structuredEntities" value="0" />
+    </parse>
+    <fetch finish="finish" timeout="{$timeout}" />
+  </xsl:variable>
+  <!-- execute the fetch pointing at the API -->
+  <xsl:variable name="r" select="viv:process-xml($xml)" />
+  <!-- check the results from the API and add appropriate contents -->
+  <xsl:choose>
+    <xsl:when test="$r/results/status = 'OK'" >
+      <xsl:for-each select="$r/results/entities//entity" >
+          <xsl:variable name="detected-entity" select="./text" />
+          <xsl:variable name="entity-type" select="./type" />
+          <xsl:variable name="entity-count" select="./count" />
+          <xsl:variable name="entity-relevance" select="./relevance" />
+          <xsl:variable name="entity-sentiment-type" select="./sentiment/type" />
+          <xsl:variable name="entity-sentiment-score" select="./sentiment/score" />
+          <xsl:choose>
+            <xsl:when test="count(.//disambiguated) > 0" >
+              <xsl:for-each select=".//disambiguated" >
+                <xsl:variable name="entity-name" select="name" />
+                <xsl:variable name="entity-website" select="website" />
+                <xsl:variable name="entity-dbpedia" select="dbpedia" />
+                <xsl:variable name="entity-freebase" select="freebase" />
+                <xsl:variable name="entity-yago" select="yago" />
+                <xsl:choose>
+                  <xsl:when test="count(.//subType) > 0">
+                    <xsl:for-each select=".//subType" >
+                      <content name="alchemyapi-entity" action="none" type="text" relevance="{$entity-relevance}" entity-type="{$entity-type}" sentiment-type="{$entity-sentiment-type}" sentiment-score="{$entity-sentiment-score}" count="{$entity-count}" website="{$entity-website}" dbpedia="{$entity-dbpedia}">
+                        <xsl:value-of select="concat($entity-type, $sgts, ., $sgts, $detected-entity, $sgts, $entity-name)" />
+                      </content>
+                    </xsl:for-each>
+                  </xsl:when>
+                  <xsl:otherwise>
+                      <content name="alchemyapi-entity" action="none" type="text" relevance="{$entity-relevance}" entity-type="{$entity-type}" sentiment-type="{$entity-sentiment-type}" sentiment-score="{$entity-sentiment-score}" count="{$entity-count}" website="{$entity-website}" dbpedia="{$entity-dbpedia}">
+                        <xsl:value-of select="concat($entity-type, $sgts, $entity-name)" />
+                      </content>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </xsl:for-each>
+            </xsl:when>
+            <xsl:otherwise>
+              <content name="alchemyapi-entity" action="none" type="text" relevance="{$entity-relevance}" entity-type="{$entity-type}" sentiment-type="{$entity-sentiment-type}" sentiment-score="{$entity-sentiment-score}" count="{$entity-count}">
+                <xsl:value-of select="concat($entity-type, $sgts, $detected-entity)" />
+              </content>
+            </xsl:otherwise>
+          </xsl:choose>
+      </xsl:for-each>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="show-debug-information">
+        <xsl:with-param name="result" select="$r" />
+        <xsl:with-param name="is-debug" select="$debug" />
+        <xsl:with-param name="label">entity-extraction</xsl:with-param>
+      </xsl:call-template>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+<!-- Keyword Extraction -->
+<xsl:template match="document" mode="keyword-extraction" >
+  <xsl:param name="text" />
+  <xsl:variable name="keyword-extraction-url" select="concat($alchemy-base-url, $keyword-extraction-url-path)" />
+  <xsl:variable name="timeout" select="viv:choose($keyword-extraction-timeout = 0, $default-timeout, $keyword-extraction-timeout) * 1000" />
+  <xsl:variable name="xml">
+    <parse url="{$keyword-extraction-url}" method="POST">
+      <xsl:if test="$proxy-host-port" >
+        <attribute name="proxy" value="{$proxy-host-port}" />
+      </xsl:if>
+      <xsl:if test="$proxy-user-pass" >
+        <attribute name="proxy-user-password" value="{$proxy-user-pass}" />
+      </xsl:if>
+      <parse-param name="outputMode" value="xml" />
+      <parse-param name="text">
+        <attribute name="value">
+          <xsl:value-of select="$text" />
+        </attribute>
+      </parse-param>
+      <parse-param name="keywordExtractMode" value="strict" />
+      <parse-param name="sentiment" value="0" />
+      <parse-param name="showSourceText" value="0" />
+      <parse-param name="maxRetrieve" value="{$keyword-extraction-max}" />
+      <parse-param name="knowledgeGraph" value="0" />
+    </parse>
+    <fetch finish="finish" timeout="{$timeout}" />
+  </xsl:variable>
+  <!-- execute the fetch pointing at the API -->
+  <xsl:variable name="r" select="viv:process-xml($xml)" />
+  <!-- check the results from the API and add appropriate contents -->
+  <xsl:choose>
+    <xsl:when test="$r/results/status = 'OK'" >
+      <xsl:for-each select="$r/results/keywords//keyword" >
+        <content name="alchemyapi-keyword" action="none" type="text" relevance="{./relevance}" >
+          <xsl:value-of select="./text" />
+        </content>
+      </xsl:for-each>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="show-debug-information">
+        <xsl:with-param name="result" select="$r" />
+        <xsl:with-param name="is-debug" select="$debug" />
+        <xsl:with-param name="label">keyword-extraction</xsl:with-param>
+      </xsl:call-template>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+<!-- Relation Extraction -->
+<xsl:template match="document" mode="relation-extraction" >
+  <xsl:param name="text" />
+  <xsl:variable name="relation-extraction-url" select="concat($alchemy-base-url, $relation-extraction-url-path)" />
+  <xsl:variable name="timeout" select="viv:choose($relation-extraction-timeout = 0, $default-timeout, $relation-extraction-timeout) * 1000" />
+  <xsl:variable name="xml">
+    <parse url="{$relation-extraction-url}" method="POST">
+      <xsl:if test="$proxy-host-port" >
+        <attribute name="proxy" value="{$proxy-host-port}" />
+      </xsl:if>
+      <xsl:if test="$proxy-user-pass" >
+        <attribute name="proxy-user-password" value="{$proxy-user-pass}" />
+      </xsl:if>
+      <parse-param name="outputmode" value="xml" />
+      <parse-param name="text">
+        <attribute name="value">
+          <xsl:value-of select="$text" />
+        </attribute>
+      </parse-param>
+      <parse-param name="maxRetrieve" value="{$relation-extraction-max}" />
+      <parse-param name="sentiment" value="0" />
+      <parse-param name="entities" value="0" />
+      <parse-param name="keywords" value="0" />
+      <parse-param name="requireEntities" value="0" />
+      <parse-param name="sentimentExcludeEntities" value="1" />
+      <parse-param name="disambiguate" value="1" />
+      <parse-param name="linkedData" value="0" />
+      <parse-param name="coreference" value="1" />
+      <parse-param name="showSourceText" value="0" />
+    </parse>
+    <fetch finish="finish" timeout="{$timeout}" />
+  </xsl:variable>
+  <!-- execute the fetch pointing at the API -->
+  <xsl:variable name="r" select="viv:process-xml($xml)" />
+  <!-- check the results from the API and add appropriate contents -->
+  <xsl:choose>
+    <xsl:when test="$r/results/status = 'OK'" >
+      <xsl:for-each select="$r/results/relations//relation" >
+          <xsl:variable name="detected-subject" select="./subject/text" />
+          <xsl:variable name="detected-action" select="./action/text" />
+          <xsl:variable name="detected-object" select="./object/text" />
+          <xsl:variable name="relation" select="concat($detected-subject, $sgts, $detected-action, viv:if-else($detected-object, $sgts, ''), $detected-object)" />
+          <content name="alchemyapi-relation" action="none" type="text" detected-subject="{$detected-subject}" detected-action="{$detected-action}" detected-object="{$detected-object}" >
+            <xsl:value-of select="$relation" />
+          </content>
+      </xsl:for-each>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="show-debug-information">
+        <xsl:with-param name="result" select="$r" />
+        <xsl:with-param name="is-debug" select="$debug" />
+        <xsl:with-param name="label">relation-extraction</xsl:with-param>
+      </xsl:call-template>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+<xsl:template name="gather-text">
+  <xsl:param name="content-names" />
+  <xsl:param name="document" />
+  <xsl:variable name="content-names-padded" select="concat('&#10;', $content-names, '&#10;')" />
+  <xsl:variable name="text" >
+    <xsl:for-each select="$document/content" >
+      <xsl:if test="contains($content-names-padded, concat('&#10;', @name, '&#10;'))" >
+        <xsl:value-of select="concat(./text(), '&#10;')" />
+      </xsl:if>
+    </xsl:for-each>
+  </xsl:variable>
+  <xsl:variable name="detagged-text" select="viv:replace(viv:replace($text, '&lt;/?(div|span|br)/?&gt;', '', 'g'), ']]>&#160;<![CDATA[', '', 'g')" />
+  <xsl:value-of select="substring(normalize-space($detagged-text), 0, 50000)" />
+</xsl:template>
+<xsl:template name="show-debug-information">
+  <xsl:param name="result" />
+  <xsl:param name="is-debug" />
+  <xsl:param name="label" />
+  <xsl:if test="$is-debug" >
+    <content name="alchemyapi-debug-{$label}-parse-url" action="none" type="text" >
+      <xsl:value-of select="$result/parse/@url" />
+    </content>
+    <content name="alchemyapi-debug-{$label}-parse-http-status" action="none" type="text" >
+      <xsl:value-of select="$result/parse/@http-status" />
+    </content>
+    <content name="alchemyapi-debug-{$label}-parse-status" action="none" type="text" >
+      <xsl:value-of select="$result/parse/@status" />
+    </content>
+    <content name="alchemyapi-debug-{$label}-parse-message" action="none" type="text" >
+      <xsl:value-of select="$result/parse/@message" />
+    </content>
+    <content name="alchemyapi-debug-{$label}-service-error" action="none" type="text">
+      <xsl:value-of select="$result/results/statusInfo" />
+    </content>
+  </xsl:if>
+</xsl:template>
+]]></parser>
+</function>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Java Web Starter Application</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+	<table>
+		<tr>
+			<td style='width: 30%;'><img class="newappIcon"
+				src='images/newapp-icon.png'></td>
+			<td>
+				<script type="text/javascript" src="index.js">	
+				</script>
+				<form id="service_form" method="post">
+					<p>Please input text here:
+					<textarea name="text" rows="4" cols="50"></textarea>
+					</p>
+					<select id="service_select" name="service">
+						<option value="Sentiment" selected="selected">Sentiment Analysis</option>
+						<option value="Taxonomy">Taxonomy</option>
+						<option value="Concept">Concept Tagging</option>
+						<option value="Entity">Entity Extraction</option>
+						<option value="Keyword">Keyword Extraction</option>
+						<option value="Relation">Relation Extraction</option>
+					</select> <input type="button" onclick="javascript:submit_service_form();" value="Submit" />
+				</form>
+			</td>
+
+		</tr>
+	</table>
+
+	<script type="text/javascript" src="index.js"></script>
+</body>
+</html>

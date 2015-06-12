@@ -1,0 +1,11 @@
+---
+services:
+- wex-AlchemyLanguage
+applications:
+- name: AlchemyLanguage
+  disk_quota: 1024M
+  host: AlchemyLanguage
+  path: target/wex-wdc-AlchemyLanguage-sample.war
+  domain: mybluemix.net
+  instances: 1
+  memory: 512M
