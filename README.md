@@ -27,7 +27,7 @@ This section outlines the steps required to deploy a basic Watson Alchemy Langua
 
 ### Creating the AlchemyAPI service and application in Bluemix
 
-A new AlchemyAPI service must be created via the ACE Bluemix web UI.  The AlchemyAPI service cannot be created via the commandline.  Navigate to https://bluemix.net and use the UI to create a new AlchemyAPI service.  Notice that you are required to provide your AlchemyAPI key when the service is created.  For the sake of the example, we have chosen to name the service `wex-AlchemyLanguage`.  Notice that "user-provided" is the only available service plan for AlchemyAPI right now.
+A new AlchemyAPI service must be created via the ACE Bluemix web UI.  The AlchemyAPI service cannot be created via the command line.  Navigate to https://bluemix.net and use the UI to create a new AlchemyAPI service.  Notice that you are required to provide your AlchemyAPI key when the service is created.  For the sake of the example, we have chosen to name the service `wex-AlchemyLanguage`.  Notice that "user-provided" is the only available service plan for AlchemyAPI right now.
 
 Return to the dashboard and create a new application with Liberty for Java.  Bind your AlchemyAPI service to your new application.
 
@@ -91,7 +91,7 @@ Follow these steps to add the converter to Engine.
 1. In Engine, create a new XML Element.  The element and name can have any value.
 2. Copy the entire contents of [function.vse-converter-alchemyapi-alchemylanguage-bluemix.xml](/engine/function.vse-converter-alchemyapi-alchemylanguage-bluemix.xml).
 3. Paste the copied XML into the Engine XML text box, replacing all text that was previously there.
-4. Save the converter configuration by clicking 'OK'
+4. Save the converter configuration by clicking **OK**
 
 To use the Alchemy Language converter in an Engine search collection, navigate to the collection's converter tab, add a new converter, and select the Alchemy Language Bluemix converter.  The converter function will be available in the collection's conversion pipeline and is now ready to be configured.  For the purpose of this example, try adding the Alchemy Language converter to your example-metadata collection.
 
@@ -99,7 +99,7 @@ To use the Alchemy Language converter in an Engine search collection, navigate t
 
 Supply the base URL for your Bluemix application in the setting provided.
 
-Individual Alchemy functions must be enabled and are each individualy configured.  This allows you to, for example, use one set of content in one function and different content in another function.
+Individual Alchemy functions must be enabled and are each individually configured.  This allows you to, for example, use one set of content in one function and different content in another function.
 
 Expand the Entity Extraction section of the converter and select the checkbox to enable Entity Extraction.
 
@@ -107,7 +107,7 @@ The results of the Alchemy Language API request will be stored as new `<content>
 
 Notice that the name of the new entity content is "alchemyapi-entity".  Navigate to the Configuration > Indexing tab of your collection.  Add "alchemyapi-entity" to your list of "fast index" contents.  Navigate to the Configuration > Binning tab of your collection.  Add a new top level binning component, select binning-set, and specify `$alchemyapi-entity` for the XPath and "Entity" for the label.  Add a new child component and click OK.  Finally, restart the indexer to pick up the new configuration.
 
-Search your collection an notice that you have a new "Entity" facet on the left.  Click the "City" facet to restrict the result set to documents which mention a city.
+Search your collection and notice that you have a new "Entity" facet on the left.  Click the "City" facet to restrict the result set to documents which mention a city.
 
 Your crawled data has been enriched with Alchemy Language text analysis!
 
