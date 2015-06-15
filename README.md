@@ -77,7 +77,7 @@ The Alchemy Language is a set of web services that enable advanced text analysis
 * [Relation Extraction](http://www.alchemyapi.com/products/alchemylanguage/relation-extraction)
 * [Taxonomy Classification](http://www.alchemyapi.com/products/alchemylanguage/taxonomy)
 
-The full Alchemy Language API reference is available on [the AlchemyAPI website](http://www.alchemyapi.com/api).
+The full Alchemy Language API reference is available on the [AlchemyAPI website](http://www.alchemyapi.com/api).
 
 
 # Using the Converter
