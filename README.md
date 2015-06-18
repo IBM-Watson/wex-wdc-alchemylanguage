@@ -29,12 +29,14 @@ This section outlines the steps required to deploy a basic Watson Alchemy Langua
 
 The Bluemix documentation can be found [here] (https://www.ng.bluemix.net/docs/)
 
-A new AlchemyAPI service must be created via the ACE Bluemix web UI.  The AlchemyAPI service cannot be created via the command line.  Navigate to https://bluemix.net and use the UI to create a new AlchemyAPI service.  Notice that you are required to provide your AlchemyAPI key when the service is created.  For the sake of the example, we have chosen to name the service `wex-AlchemyLanguage`.  Notice that "user-provided" is the only available service plan for AlchemyAPI right now.
+Navigate to the Bluemix dashboard and create a new application with Liberty for Java.
 
-Return to the dashboard and create a new application with Liberty for Java.  Bind your AlchemyAPI service to your new application.
+A new AlchemyAPI service must be created via the ACE Bluemix web UI.  The AlchemyAPI service cannot be created via the command line.  Navigate to the Bluemix dashboard and create a new AlchemyAPI service.  Notice that you are required to provide your AlchemyAPI key when the service is created.  Notice also that you must supply the name of the application you just created.  For the sake of the example, we have chosen to name the service `wex-AlchemyLanguage`.  Notice that "user-provided" is the only available service plan for AlchemyAPI right now.
 
    
 ### Configuring and Deploying the Watson Alchemy Language Web Service in Bluemix
+
+Clone this Git repository, or download the zip, extract, and navigate to the repository directory on the commandline.
 
 The example Bluemix application uses a `manifest.yml` file to specify the application name, services bindings, and basic application settings.  Using a manifest simplifies distribution and deployment of CloudFoundry applications.
 
@@ -46,24 +48,25 @@ If you have not done so already, sign in to Bluemix.
 
 ```
 $> cf api api.ng.bluemix.net
-cf login
+...
+$> cf login
 ```
 
-Build the application web service using [Apache Maven](http://maven.apache.org/). Before performing this step, verify that you are in the Bluemix directory. This will generate a packaged Java WAR called `wex-AlchemyLanguage.war`.
+Build the application web service using [Apache Maven](http://maven.apache.org/). Before performing this step, verify that you are in the /bluemix directory of this repository. This will generate a Java WAR called `wex-AlchemyLanguage.war`.
 
 ```
 $> mvn install
 ```
 
 
-Finally, deploy the application to your space in the Bluemix cloud.  If this is the first time deploying, the application will be created for you.  Subsequent pushes to Bluemix will overwrite the previous instances you have deployed.
+Finally, deploy the application to your space in the Bluemix cloud.  Subsequent pushes to Bluemix will overwrite the previous instances you have deployed.
 
 ```
 $> cf push
 ```
 
 
-Once the application has finished restarting, you should now be able to run a test using the simple application test runner included in the WAR.  You can view the route that was created for your application with `cf routes`.  The running application URL can be determined by combining the host and domain from the routes listing.  You can also find this information in the `manifest.yml` file. By default the route should be `AlchemyLanguage.mybluemix.net`.
+Once the application has finished restarting, you should now be able to run a test using the simple application test runner included in the WAR.  You can view the route that was created for your application with `cf routes`.  The running application URL can be determined by combining the host and domain from the routes listing.  You can also find this information in the `manifest.yml` file.
 
 
 ### Watson Explorer Engine Converter for Alchemy Language in Bluemix
@@ -90,7 +93,7 @@ The Alchemy Language Bluemix Engine converter can be used during any document in
 
 Follow these steps to add the converter to Engine.
 
-1. In Engine, create a new XML Element.  The element and name can have any value.
+1. In Engine, create a new XML Element by ensuring you are on the **Configuration** tab of the admin tool and then clicking the "+" across from "XML" in the left menu.  The element and name can have any value.
 2. Copy the entire contents of [function.vse-converter-alchemyapi-alchemylanguage-bluemix.xml](/engine/function.vse-converter-alchemyapi-alchemylanguage-bluemix.xml).
 3. Paste the copied XML into the Engine XML text box, replacing all text that was previously there.
 4. Save the converter configuration by clicking **OK**
