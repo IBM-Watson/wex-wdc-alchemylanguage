@@ -27,7 +27,7 @@ This section outlines the steps required to deploy a basic Watson Alchemy Langua
 
 ### Creating the AlchemyAPI service and application in Bluemix
 
-The Bluemix documentation can be found [here]. (https://www.ng.bluemix.net/docs/)
+The Bluemix documentation can be found [here] (https://www.ng.bluemix.net/docs/)
 
 A new AlchemyAPI service must be created via the ACE Bluemix web UI.  The AlchemyAPI service cannot be created via the command line.  Navigate to https://bluemix.net and use the UI to create a new AlchemyAPI service.  Notice that you are required to provide your AlchemyAPI key when the service is created.  For the sake of the example, we have chosen to name the service `wex-AlchemyLanguage`.  Notice that "user-provided" is the only available service plan for AlchemyAPI right now.
 
