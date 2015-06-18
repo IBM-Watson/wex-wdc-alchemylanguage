@@ -52,7 +52,7 @@ $> cf api api.ng.bluemix.net
 $> cf login
 ```
 
-Build the application web service using [Apache Maven](http://maven.apache.org/). Before performing this step, verify that you are in the /bluemix directory of this repository. This will generate a Java WAR called `wex-AlchemyLanguage.war`.
+Build the application web service using [Apache Maven](http://maven.apache.org/). Before performing this step, verify that you are in the `/bluemix` directory of this repository. This will generate a Java WAR called `wex-AlchemyLanguage.war`.
 
 ```
 $> mvn install
