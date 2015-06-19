@@ -1,11 +1,11 @@
 <function name="vse-converter-alchemyapi-alchemylanguage-bluemix" type="converter" type-in="application/vxml-unnormalized" type-out="application/vxml-unnormalized" >
   <prototype>
     <description>
-      The Watson AlchemyAPI Bluemix service offers 12 API functions as part of its text analysis service, each of which uses sophisticated natural language processing techniques to analyze your content and add high-level semantic information. These functions are accessed via IBM Bluemix, and the data is returned as an easy-to-parse structure.  An API key required to use the AlchemyLanguage service and can be acquired from the Alchemy API wesbsite (http://www.alchemyapi.com/api/register.html).
+      The Watson AlchemyAPI Bluemix service offers 12 API functions as part of its text analysis service, each of which uses sophisticated natural language processing techniques to analyze your content and add high-level semantic information. These functions are accessed via IBM Bluemix, and the data is returned as an easy-to-parse structure.  An API key required to use the AlchemyLanguage service and can be acquired from the Alchemy API website (http://www.alchemyapi.com/api/register.html).
 
       See the AlchemyLanguage API Reference for examples and detailed information on each AlchemyLanguage function (http://www.alchemyapi.com/products/alchemylanguage).
     </description>
-    <label>AlchemyLangauge Bluemix Converter</label>
+    <label>AlchemyLanguage Bluemix Converter</label>
 
     <!-- Global -->
     <declare type="url" name="alchemy-base-url" initial-value="http://MYAPPLICATION.mybluemix.net/">
