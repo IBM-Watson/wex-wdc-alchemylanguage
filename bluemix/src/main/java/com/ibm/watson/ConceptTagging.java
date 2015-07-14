@@ -33,7 +33,7 @@ import org.w3c.dom.Element;
 
 @Path("/getconcept")
 public class ConceptTagging {
-
+	String ORIGINAL_SERVICE_URL = "https://access.alchemyapi.com";
 	String xmlHeader = "<?xml version='1.0' encoding='UTF-8'?>";
 	String apiURL = "/calls/text/TextGetRankedConcepts";
 	
@@ -78,7 +78,16 @@ public class ConceptTagging {
 			JSONObject credentials = serviceInfo.getJSONArray(Service_Name)
 					.getJSONObject(0).getJSONObject("credentials");
 
-			String serverURL = credentials.getString("url");
+			try {
+				serviceURL = credentials.getString("url");
+			} catch (Exception e) {
+			}
+			// If we didn't find a URL for the AlchemyAPI service in
+			// VCAP_SERVICES,
+			// use the original.
+			if ("".equals(serviceURL)) {
+				serviceURL = ORIGINAL_SERVICE_URL;
+			}
 			String apikey = credentials.getString("apikey");
 
 			// Prepare the HTTP connection to the service
